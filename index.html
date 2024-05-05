@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BMI Calculator</title>
+<title>Yugal Image Converter</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -14,10 +14,11 @@
 
     .container {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: flex-start;
-        padding: 20px;
+        flex-direction: column;
+        align-items: center;
+        padding: 25px;
+        max-width: 800px;
+        margin: 0 auto;
     }
 
     .box {
@@ -25,17 +26,26 @@
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         padding: 20px;
-        margin: 10px;
-        flex: 1;
-        max-width: 400px;
+        margin: 20px;
+        width: 100%;
     }
 
     h1, h2 {
         text-align: center;
+        color: #333;
     }
 
-    input[type="number"] {
-        width: calc(100% - 20px);
+    input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    select {
+        width: 100%;
         padding: 10px;
         margin: 10px 0;
         border: 1px solid #ccc;
@@ -53,6 +63,7 @@
         cursor: pointer;
         width: 100%;
         font-size: 16px;
+        transition: background-color 0.3s ease;
     }
 
     button:hover {
@@ -61,16 +72,14 @@
 
     .result {
         margin-top: 20px;
-        font-weight: bold;
-    }
-
-    .graph {
-        width: 100%;
-        height: 200px; /* Adjust height as needed */
-    }
-
-    .exercise-diet-plan {
         text-align: center;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     }
 
     .footer {
@@ -79,106 +88,97 @@
         color: #666;
         background-color: #333;
         color: white;
-        padding: 10px 0;
+        padding: 20px 0;
+        width: 100%;
     }
 
     .header {
         background-color: #4CAF50;
-        padding: 20px;
+        padding: 20px 0;
+        width: 100%;
     }
 
     .header-text {
         color: white;
         text-align: center;
+        margin: 0;
+    }
+
+    @media screen and (max-width: 600px) {
+        .box {
+            max-width: 90%;
+        }
     }
 </style>
 </head>
 <body>
 <header class="header">
-    <h1 class="header-text">Yugal BMI Calculator</h1>
+    <h1 class="header-text">Yugal Image Converter</h1>
 </header>
 <div class="container">
-    <div class="calculator box">
-        <h2>BMI Calculator</h2>
-        <input type="number" id="weight" placeholder="Enter your weight (kg)">
-        <input type="number" id="height" placeholder="Enter your height (cm)">
-        <button onclick="calculateBMI()">Calculate BMI</button>
+    <div class="box converter">
+        <h2>Convert Image</h2>
+        <input type="file" id="imageInput">
+        <select id="formatSelect">
+            <option value="jpeg">JPEG</option>
+            <option value="png">PNG</option>
+            <option value="gif">GIF</option>
+            <option value="bmp">BMP</option>
+            <option value="webp">WEBP</option>
+            <option value="tiff">TIFF</option>
+            <option value="svg+xml">SVG</option>
+        </select>
+        <button onclick="convertImage()">Convert</button>
         <div class="result" id="result"></div>
-    </div>
-    <div class="graph-container box">
-        <h2>BMI Category Graph</h2>
-        <div id="chartContainer" class="graph"></div>
-    </div>
-    <div class="exercise-diet-plan box">
-        <h2>Exercise & Diet Plan</h2>
-        <div id="exerciseDietPlan"></div>
+        <button id="downloadButton" style="display: none;" onclick="downloadConvertedImage()">Download Image</button>
     </div>
 </div>
-<footer class="footer">© 2023 Shivaji College (University Of Delhi). All rights reserved.<br>Created By Yugal 22/63044<br>BSc. Phy. Sci. With Computer Science</footer>
+<footer class="footer">© <br>Created By Yugal 22/63044<br>BSc. Phy. Sci. With Computer Science</footer>
 <script>
-    function calculateBMI() {
-        var weight = document.getElementById('weight').value;
-        var height = document.getElementById('height').value;
-        var bmi = weight / ((height / 100) * (height / 100));
+    function convertImage() {
+        var imageInput = document.getElementById('imageInput');
+        var formatSelect = document.getElementById('formatSelect');
+        var selectedFormat = formatSelect.value;
         var resultElement = document.getElementById('result');
-        var exerciseDietPlanElement = document.getElementById('exerciseDietPlan');
-        var category;
 
-        if (bmi < 18.5) {
-            category = 'Underweight';
-        } else if (bmi < 24.9) {
-            category = 'Normal weight';
-        } else if (bmi < 29.9) {
-            category = 'Overweight';
+        if (imageInput.files && imageInput.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var image = new Image();
+                image.src = e.target.result;
+
+                image.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(image, 0, 0);
+
+                    var dataURL = canvas.toDataURL('image/' + selectedFormat);
+                    resultElement.innerHTML = '<img src="' + dataURL + '" alt="Converted Image">';
+                    document.getElementById('downloadButton').style.display = 'block';
+                    document.getElementById('downloadButton').setAttribute('data-url', dataURL);
+                };
+            };
+
+            reader.readAsDataURL(imageInput.files[0]);
         } else {
-            category = 'Obese';
+            resultElement.innerHTML = 'Please select an image.';
         }
+    }
 
-        resultElement.innerHTML = `Your BMI: ${bmi.toFixed(2)} (${category})`;
-
-        // Display exercise and diet plan based on BMI category
-        var exercisePlan = '';
-        var dietPlan = '';
-        switch (category) {
-            case 'Underweight':
-                exercisePlan = 'Cardiovascular exercises and strength training';
-                dietPlan = 'Increase calorie intake with balanced nutrition, focus on protein-rich foods.';
-                break;
-            case 'Normal weight':
-                exercisePlan = 'Regular exercise routine for maintenance';
-                dietPlan = 'Maintain a balanced diet with a variety of nutrients.';
-                break;
-            case 'Overweight':
-                exercisePlan = 'Cardio exercises and calorie deficit';
-                dietPlan = 'Reduce calorie intake, focus on whole foods, avoid processed foods.';
-                break;
-            case 'Obese':
-                exercisePlan = 'High-intensity interval training (HIIT) and strength training';
-                dietPlan = 'Strict calorie control, focus on nutrient-dense foods, avoid sugary drinks.';
-                break;
-        }
-
-        exerciseDietPlanElement.innerHTML = `<strong>Exercise Plan:</strong> ${exercisePlan}<br><strong>Diet Plan:</strong> ${dietPlan}`;
-
-        // Draw BMI chart
-        var chart = new CanvasJS.Chart("chartContainer", {
-            animationEnabled: true,
-            title: {
-                text: "BMI Category"
-            },
-            data: [{
-                type: "column",
-                dataPoints: [
-                    { label: "Underweight", y: bmi < 18.5 ? bmi : 0 },
-                    { label: "Normal weight", y: bmi >= 18.5 && bmi < 24.9 ? bmi : 0 },
-                    { label: "Overweight", y: bmi >= 24.9 && bmi < 29.9 ? bmi : 0 },
-                    { label: "Obese", y: bmi >= 29.9 ? bmi : 0 }
-                ]
-            }]
-        });
-        chart.render();
+    function downloadConvertedImage() {
+        var downloadButton = document.getElementById('downloadButton');
+        var dataURL = downloadButton.getAttribute('data-url');
+        var link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'converted_image.' + document.getElementById('formatSelect').value;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        document.getElementById('downloadButton').style.display = 'none';
     }
 </script>
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </body>
 </html>
