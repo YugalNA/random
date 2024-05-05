@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI Calculator</title>
+<style>
+    /* CSS for Header */
+    header {
+        text-align: center;
+        background-image: linear-gradient(to right, #ff00cc, #3333ff);
+        color: #fff;
+        padding: 20px 0;
+        margin-bottom: 20px;
+        border-radius: 10px 10px 0 0;
+    }
+
+    /* CSS for Footer */
+    footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: #666;
+    }
+
+    /* CSS for BMI Calculator */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f3f3f3;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .calculator {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    .result {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+
+    /* CSS for BMI Chart */
+    #chartContainer {
+        width: 100%;
+        height: 300px;
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>Yugal BMI Calculator</h1>
+</header>
+<div class="calculator">
+    <input type="number" id="weight" placeholder="Enter your weight (kg)">
+    <input type="number" id="height" placeholder="Enter your height (cm)">
+    <button onclick="calculateBMI()">Calculate BMI</button>
+    <div class="result" id="result"></div>
+    <div id="chartContainer"></div>
+</div>
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script>
+    // JavaScript for BMI Calculator
+    function calculateBMI() {
+        var weight = document.getElementById('weight').value;
+        var height = document.getElementById('height').value;
+        var bmi = weight / ((height / 100) * (height / 100));
+        var resultElement = document.getElementById('result');
+        var category;
+
+        if (bmi < 18.5) {
+            category = 'Underweight';
+        } else if (bmi < 24.9) {
+            category = 'Normal weight';
+        } else if (bmi < 29.9) {
+            category = 'Overweight';
+        } else {
+            category = 'Obese';
+        }
+
+        resultElement.innerHTML = `Your BMI: ${bmi.toFixed(2)} (${category})`;
+
+        // Display exercise and diet plan based on BMI category
+        var exercisePlan = '';
+        var dietPlan = '';
+        switch (category) {
+            case 'Underweight':
+                exercisePlan = 'Cardiovascular exercises and strength training';
+                dietPlan = 'Increase calorie intake with balanced nutrition';
+                break;
+            case 'Normal weight':
+                exercisePlan = 'Regular exercise routine for maintenance';
+                dietPlan = 'Maintain a balanced diet';
+                break;
+            case 'Overweight':
+                exercisePlan = 'Cardio exercises and calorie deficit';
+                dietPlan = 'Reduce calorie intake, focus on whole foods';
+                break;
+            case 'Obese':
+                exercisePlan = 'High-intensity interval training (HIIT) and strength training';
+                dietPlan = 'Strict calorie control, focus on nutrient-dense foods';
+                break;
+        }
+
+        resultElement.innerHTML += `<br><br>Exercise Plan: ${exercisePlan}<br>Diet Plan: ${dietPlan}`;
+
+        // Draw BMI chart
+        var chart = new CanvasJS.Chart("chartContainer", {
+            animationEnabled: true,
+            title: {
+                text: "BMI Category"
+            },
+            data: [{
+                type: "column",
+                dataPoints: [
+                    { label: "Underweight", y: bmi < 18.5 ? bmi : 0 },
+                    { label: "Normal weight", y: bmi >= 18.5 && bmi < 24.9 ? bmi : 0 },
+                    { label: "Overweight", y: bmi >= 24.9 && bmi < 29.9 ? bmi : 0 },
+                    { label: "Obese", y: bmi >= 29.9 ? bmi : 0 }
+                ]
+            }]
+        });
+        chart.render();
+    }
+</script>
+<footer>© 2023 Shivaji College (University Of Delhi). All rights reserved. Created By Yugal 22/63044 BSc. Phy. Sci. With Computer Science</footer>
+</body>
+</html>
